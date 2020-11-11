@@ -14,6 +14,33 @@ def checkParentheses(text):
     else:
         return True
 
+def parensMatch(left, right):
+    if (left == '(' and right == ')'):
+        return True
+    if (left == '{' and right == '}'):
+        return True
+    if (left == '<' and right == '>'):
+        return True
+    if (left == '[' and right == ']'):
+        return True
+    return False
+
+def checkMixedParentheses(text):
+    stack = []
+    for character in text:
+        if character in '({<[':
+            stack.append(character)
+        elif character in ')}>]':
+            if len(stack) == 0:
+                return False
+            if parensMatch(stack[-1], character):
+                stack.pop(-1)
+    if len(stack) == 0:
+        return True
+    else:
+        return False
+
+
 inputs = [
     ('())(()', False),
     ('((()()(()))', False),
@@ -30,20 +57,14 @@ inputs = [
     ('((()()())()())', True),
 ]
 hard_inputs = [
-    '[]()', # true
-    '({()()(()))', # false
-    '({()()(())})', # true
-    '(<>)', # true
-    '((()())(()())())', # true
+    ('[]>()', False),
+    ('({()()(()))', False),
+    ('({()()(())})', True),
+    ('(<>)', True),
+    ('((()())(()())())', True),
 ]
 
-for pair in inputs:
-    input = pair[0]
-    correct_answer = pair[1]
-    answer = checkParentheses(input)
-    print(f'{input}, {answer}, {correct_answer}')
-
-for (input, correct_answer) in inputs:
-    answer = checkParentheses(input)
+for (input, correct_answer) in hard_inputs:
+    answer = checkMixedParentheses(input)
     print(f'{input}, {answer}, {correct_answer}')
 
