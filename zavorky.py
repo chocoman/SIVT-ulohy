@@ -14,11 +14,8 @@ def checkParentheses(text):
     else:
         return True
 
-def soucet(a, b):
-    c = a + b
-    return c
 inputs = [
-    ('()', True),
+    ('())(()', False),
     ('((()()(()))', False),
     ('((()()(())))', True),
     ('(()())', True),
@@ -40,6 +37,11 @@ hard_inputs = [
     '((()())(()())())', # true
 ]
 
+for pair in inputs:
+    input = pair[0]
+    correct_answer = pair[1]
+    answer = checkParentheses(input)
+    print(f'{input}, {answer}, {correct_answer}')
 
 for (input, correct_answer) in inputs:
     answer = checkParentheses(input)
