@@ -19,12 +19,25 @@ def loadSequence(prefix, suffix, length, height, width, color_depth):
 def exportImage(numpy_image, output_path):
     pil_image = Image.fromarray(np.clip(np.uint8(numpy_image), 0, 255))
     pil_image.save(output_path)
-    
+
+def removeBackground(frame, background):
+    height, width, depth = frame.shape
+    flippedBackground = np.flip(background, 1)
+    differences = np.mean(np.abs(frame - background), 2)
+    backgroundMask = differences < 10
+    expandedMask = np.repeat(np.reshape(backgroundMask, (height, width, 1)), axis=2, repeats=3)
+    frame[expandedMask] = flippedBackground[expandedMask]
+    return frame
+
 frames = loadSequence('coral/coral-', '.png', 55, 216, 384, 3)
 print(frames.shape)
 
-# TODO process video...
+background = np.median(frames, 0)
+
+
+exportImage(background, './output/background2.png')
 
 for i in range(len(frames)):
     os.makedirs('output', exist_ok=True)
-    exportImage(frames[i], f'./output/debug-{i+1}.png')
+    mask = removeBackground(frames[i], background)
+    exportImage(mask, f'./output/mask-{i+1}.png')
