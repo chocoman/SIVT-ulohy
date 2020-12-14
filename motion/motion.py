@@ -22,11 +22,11 @@ def exportImage(numpy_image, output_path):
 
 def removeBackground(frame, background):
     height, width, depth = frame.shape
-    flippedBackground = np.flip(background, 1)
+    newBackground = np.zeros((height, width, depth)) #np.flip(background, 1)
     differences = np.mean(np.abs(frame - background), 2)
-    backgroundMask = differences < 10
-    expandedMask = np.repeat(np.reshape(backgroundMask, (height, width, 1)), axis=2, repeats=3)
-    frame[expandedMask] = flippedBackground[expandedMask]
+    backgroundMask = differences < 20
+    expandedMask = np.tile(np.reshape(backgroundMask, (height, width, 1)), (1, 1, 3))
+    frame[expandedMask] = newBackground[expandedMask]
     return frame
 
 frames = loadSequence('coral/coral-', '.png', 55, 216, 384, 3)
