@@ -58,6 +58,18 @@ def identifyAreas(mask):
         area_id += 1
     return areas
 
+def filterSmallAreas(areas):
+    max_value = int(np.round(np.max(areas)))
+    for i in range(1, max_value):
+        area_size = np.sum(areas == i)
+        if (area_size < 5):
+            areas[areas == i] = 0
+            print(f'deleted {i}')
+def countAreas(areas):
+    print(np.unique(areas))
+    return len(np.unique(areas)) - 1
+
+
 frames = loadSequence('coral/coral-', '.png', 55, 216, 384, 3)
 print(frames.shape)
 
@@ -65,6 +77,10 @@ background = np.median(frames, 0)
 
 mask = getForegroundMask(frames[7], background)
 areas = identifyAreas(mask)
+
+filterSmallAreas(areas)
+fish_count = countAreas(areas)
+print(fish_count)
 
 exportImage((areas * 71) % 256 , './output/areas.png')
 exportImage(background, './output/background2.png')
