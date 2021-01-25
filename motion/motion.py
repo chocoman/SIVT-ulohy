@@ -10,7 +10,7 @@ def loadImage(file_path):
 def loadSequence(prefix, suffix, length, height, width, color_depth):
     video = np.zeros((length, height, width, color_depth))
     for i in range(length):
-        image = loadImage(prefix + str(i+1) + suffix)
+        image = loadImage(f'{prefix}{i+1:03d}{suffix}')
         video[i, :, :, :] = image
     # gray = np.sum(video,3) / 3
     # return gray
@@ -73,22 +73,21 @@ def countAreas(areas):
     return len(np.unique(areas)) - 1
 
 
-frames = loadSequence('coral/coral-', '.png', 55, 216, 384, 3)
+frames = loadSequence('coral-dense/coral-dense-', '.png', 55, 216, 384, 3)
 print(frames.shape)
 
 background = np.median(frames, 0)
 
-mask = getForegroundMask(frames[7], background)
-areas = identifyAreas(mask)
 
-filterSmallAreas(areas)
-fish_count = countAreas(areas)
-print(fish_count)
+exportImage(background, f'./output/background.png')
 
-exportImage((areas * 71) % 256 , './output/areas.png')
-exportImage(background, './output/background2.png')
-
-for i in range(len(frames)):
+for i in range(8):
     os.makedirs('output', exist_ok=True)
-    mask = removeBackground(frames[i], background)
-    exportImage(mask, f'./output/mask-{i+1}.png')
+    mask = getForegroundMask(frames[7], background)
+    areas = identifyAreas(mask)
+    filterSmallAreas(areas)
+    fish_count = countAreas(areas)
+    print(fish_count)
+
+    exportImage((areas * 71) % 256 , f'./output/areas{i:03d}.png')
+    exportImage(mask, f'./output/mask-{i+1:03d}.png')
