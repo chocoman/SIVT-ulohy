@@ -33,16 +33,19 @@ def removeBackground(frame, background):
     frame[expandedMask] = newBackground[expandedMask]
     return frame
 
-def markArea(i, j, areas, area_id, mask):
+def markArea(start_i, start_j, areas, area_id, mask):
     height, width = mask.shape
-    if i < 0 or j < 0 or i >= height or j >= width: return
-    if (mask[i, j] == False): return
-    if (areas[i, j] != 0): return
-    areas[i, j] = area_id
-    markArea(i, j - 1, areas, area_id, mask)
-    markArea(i - 1, j, areas, area_id, mask)
-    markArea(i, j + 1, areas, area_id, mask)
-    markArea(i + 1, j, areas, area_id, mask)
+    stack = [(start_i, start_j)]
+    while len(stack) > 0:
+        i, j = stack.pop()
+        if i < 0 or j < 0 or i >= height or j >= width: continue
+        if (mask[i, j] == False): continue
+        if (areas[i, j] != 0): continue
+        areas[i, j] = area_id
+        stack.append((i, j - 1))
+        stack.append((i - 1, j))
+        stack.append((i, j + 1))
+        stack.append((i + 1, j))
 
 def identifyAreas(mask):
     height, width = mask.shape
